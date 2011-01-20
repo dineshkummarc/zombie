@@ -99,6 +99,65 @@ brains.get "/app.js", (req, res)-> res.send """
   $(function() { Sammy("#main").run("#/") });
   """
 
+brains.get "/script/jqtemplates-span", (req, res)-> res.send """
+  <html>
+    <head>
+      <title>Foo</title>
+      <script src="/jquery.js"></script>
+      <script src="/jquery.tmpl.js"></script>
+    </head>
+    <body>
+      <span id="movieTemplate" style="display:none">
+          <li><b>${Name}</b> (${ReleaseYear})</li>
+      </span>
+      <script>
+        var movies = [
+            { Name: "Night of the Living Dead", ReleaseYear: "1968" },
+            { Name: "Dawn of the Dead", ReleaseYear: "1978" },
+            { Name: "Shaun of the Dead", ReleaseYear: "2004" }
+        ];
+
+        // Render the template with the movies data and insert
+        // the rendered HTML under the "movieList" element
+        $( "#movieTemplate" ).tmpl( movies )
+            .appendTo( "#movieList" );
+      </script>
+      <div id="movieList">
+      </div>
+    </body>
+  </html>
+  """
+
+
+brains.get "/script/jqtemplates-script", (req, res)-> res.send """
+  <html>
+    <head>
+      <title>Foo</title>
+      <script src="/jquery.js"></script>
+      <script src="/jquery.tmpl.js"></script>
+    </head>
+    <body>
+      <script id="movieTemplate" type="text/x-jquery-tmpl">
+          <li><b>${Name}</b> (${ReleaseYear})</li>
+      </script>
+      <script>
+        var movies = [
+            { Name: "Night of the Living Dead", ReleaseYear: "1968" },
+            { Name: "Dawn of the Dead", ReleaseYear: "1978" },
+            { Name: "Shaun of the Dead", ReleaseYear: "2004" }
+        ];
+
+        // Render the template with the movies data and insert
+        // the rendered HTML under the "movieList" element
+        $( "#movieTemplate" ).tmpl( movies )
+            .appendTo( "#movieList" );
+      </script>
+      <div id="movieList">
+      </div>
+    </body>
+  </html>
+  """
+
 
 vows.describe("Scripts").addBatch(
   "script context":
@@ -115,6 +174,15 @@ vows.describe("Scripts").addBatch(
   "adding script using appendChild":
     zombie.wants "http://localhost:3003/script/append"
       "should run script": (browser)-> assert.equal browser.document.title, "Script appendChild"
+
+  "jquery template test":
+    zombie.wants "http://localhost:3003/script/jqtemplates-span"
+      "should not eval jqtmpl script tag contents": (browser)-> assert.equal browser.querySelector('#movieList>li>b').innerHTML, 'Night of the Living Dead'
+
+  # THIS WILL THROW AN ERROR AND HANG THE TESTS
+  "jquery template test 2":
+    zombie.wants "http://localhost:3003/script/jqtemplates-script"
+      "should not eval jqtmpl script tag contents": (browser)-> assert.equal browser.querySelector('#movieList>li>b').innerHTML, 'Night of the Living Dead'
 
   "run without scripts":
     topic: ->
