@@ -10,6 +10,7 @@ brains.get "/cookies", (req, res)->
   res.cookie "_path1", "yummy", "Path": "/cookies"
   res.cookie "_path2", "yummy", "Path": "/cookies/sub"
   res.cookie "_path3", "wrong", "Path": "/wrong"
+  res.cookie "_path4", "yummy", "Path": "/"
   res.cookie "_domain1", "here", "Domain": ".localhost"
   res.cookie "_domain2", "not here", "Domain": "not.localhost"
   res.cookie "_domain3", "wrong", "Domain": "notlocalhost"
@@ -37,8 +38,10 @@ vows.describe("Cookies").addBatch(
         "should not have access to expired cookies": (cookies)->
           assert.isUndefined cookies.get("_expires3")
           assert.isUndefined cookies.get("_expires4")
-        "should have access to path cookies": (cookies)->
+        "should have access to cookies for the path /cookies": (cookies)->
           assert.equal cookies.get("_path1"), "yummy"
+        "should have access to cookies for paths which are ancestors of /cookies": (cookies)->
+          assert.equal cookies.get("_path4"), "yummy"
         "should not have access to other paths": (cookies)->
           assert.isUndefined cookies.get("_path2")
           assert.isUndefined cookies.get("_path3")
@@ -60,7 +63,7 @@ vows.describe("Cookies").addBatch(
             , {}
           "should include only visible cookies": (pairs)->
             keys = (key for key, value of pairs).sort()
-            assert.deepEqual keys, "_domain1 _expires1 _expires2 _name _path1".split(" ")
+            assert.deepEqual keys, "_domain1 _expires1 _expires2 _name _path1 _path4".split(" ")
           "should match name to value": (pairs)->
            assert.equal pairs._name, "value"
            assert.equal pairs._path1, "yummy"
@@ -81,8 +84,10 @@ vows.describe("Cookies").addBatch(
       browser.cookies("localhost").set "_expires2", "0s", "max-age": 0
       browser.cookies("localhost", "/cookies").set "_path1", "here"
       browser.cookies("localhost", "/cookies/echo").set "_path2", "here"
-      browser.cookies("localhost", "/jars").set "_path3", "there"
-      browser.cookies("localhost", "/cookies/fido").set "_path4", "there"
+      browser.cookies("localhost", "/jars").set "_path3", "there", "path": "/jars"
+      browser.cookies("localhost", "/cookies/fido").set "_path4", "there", "path": "/cookies/fido"
+      browser.cookies("localhost", "/jars").set "_path5", "here", "path": "/cookies"
+      browser.cookies("localhost", "/jars").set "_path6", "here"
       browser.cookies(".localhost").set "_domain1", "here"
       browser.cookies("not.localhost").set "_domain2", "there"
       browser.cookies("notlocalhost").set "_domain3", "there"
@@ -99,6 +104,8 @@ vows.describe("Cookies").addBatch(
     "should pass path cookies to server": (cookies)->
       assert.equal cookies._path1, "here"
       assert.equal cookies._path2, "here"
+    "should pass cookies that specified a different path when they were assigned": (cookies)-> assert.equal cookies._path5, "here" 
+    "should pass cookies that didn't specify a path when they were assigned": (cookies)-> assert.equal cookies._path6, "here" 
     "should not pass unrelated path cookies to server": (cookies)->
       assert.isUndefined cookies._path3
       assert.isUndefined cookies._path4

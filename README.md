@@ -2,6 +2,10 @@ zombie.js(1) -- Insanely fast, headless full-stack testing using Node.js
 ========================================================================
 
 
+Psst .. we got a [mailing list](http://discuss.zombie.labnotes.org) and
+[IRC](irc://irc.freenode.net/zombie.js)
+
+
 ## The Bite
 
 If you're going to write an insanely fast, headless browser, how can you not
@@ -201,6 +205,13 @@ Zombie.js supports the following:
 - `alert`, `confirm` and `prompt`
 
 
+## In The Family
+
+**[capybara-zombie](https://github.com/plataformatec/capybara-zombie)** -- Capybara driver for zombie.js running on top of node.
+
+**[zombie-jasmine-spike](https://github.com/mileskin/zombie-jasmine-spike)** -- Spike project for trying out Zombie.js with Jasmine
+
+
 ## Reporting Glitches
 
 **Step 1:** Run Zombie with debugging turned on, the trace will help
@@ -237,7 +248,10 @@ Read more [about troubleshooting](troubleshoot)
 Read more [about the guts of Zombie.js](guts) and check out the
 outstanding [to-dos](todo).
 
-IRC: [#zombie.js on Freenode](irc://irc.freenode.net/zombie.js)
+Follow announcements, ask questions on [the mailing list](http://discuss.zombie.labnotes.org)
+
+Get help on IRC: join [zombie.js on
+Freenode](irc://irc.freenode.net/zombie.js) or [web-based IRC](http://webchat.freenode.net/?channels=zombie-js)
 
 
 ## Brains
